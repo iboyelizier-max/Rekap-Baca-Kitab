@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Hasil Lomba Baca Kitab Kuning - Pondok Pesantren Al Hikmah Darussalam</title>
+        <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Amiri for Islamic/Arabic touch -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-amiri { font-family: 'Amiri', serif; }
+        @media print {
+            body { background: white !important; color: black !important; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            table { width: 100% !important; border-collapse: collapse !important; }
+            th, td { border: 1px solid #cbd5e1 !important; padding: 6px 8px !important; font-size: 11pt !important; }
+        }
+        .print-only { display: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <header class="bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 text-white shadow-xl py-6 px-4 no-print">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <div class="flex items-center justify-center md:justify-start gap-2 mb-1">
+                    <img src="logo.png" alt="Logo Pondok" class="w-8 h-8 object-contain">
+                    <h2 class="text-xs uppercase tracking-widest text-amber-300 font-semibold">Pondok Pesantren Al Hikmah Darussalam</h2>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight font-amiri">REKAP HASIL LOMBA BACA KITAB KUNING</h1>
+                <p class="text-emerald-200 text-sm mt-1">Sistem Rekapitulasi dan Penentuan Juara Otomatis</p>
+            </div>
+            <div class="flex flex-wrap gap-2 justify-center">
+                <button onclick="demoPrint()" class="bg-amber-500 hover:bg-amber-600 text-emerald-950 font-bold px-4 py-2 rounded-lg shadow transition flex items-center gap-2 text-sm cursor-pointer">
+                    <i class="fa-solid fa-print"></i> Cetak Hasil
+                </button>
+                <button onclick="resetData()" class="bg-rose-700 hover:bg-rose-800 text-white px-3 py-2 rounded-lg shadow transition flex items-center gap-2 text-sm cursor-pointer">
+                    <i class="fa-solid fa-rotate-right"></i> Reset
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow space-y-8">
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 no-print">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+                <div class="bg-emerald-100 text-emerald-800 p-3 rounded-lg text-xl"><i class="fa-solid fa-users"></i></div>
+                <div><p class="text-xs text-slate-500 font-medium">Total Peserta</p><h3 id="stat-total" class="text-xl font-bold text-slate-800">0</h3></div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+                <div class="bg-amber-100 text-amber-800 p-3 rounded-lg text-xl"><i class="fa-solid fa-medal"></i></div>
+                <div><p class="text-xs text-slate-500 font-medium">Nilai Tertinggi</p><h3 id="stat-highest" class="text-xl font-bold text-slate-800">-</h3></div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+                <div class="bg-blue-100 text-blue-800 p-3 rounded-lg text-xl"><i class="fa-solid fa-chart-line"></i></div>
+                <div><p class="text-xs text-slate-500 font-medium">Rata-rata Nilai</p><h3 id="stat-average" class="text-xl font-bold text-slate-800">-</h3></div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+                <div class="bg-rose-100 text-rose-800 p-3 rounded-lg text-xl"><i class="fa-solid fa-arrow-down-wide-short"></i></div>
+                <div><p class="text-xs text-slate-500 font-medium">Nilai Terendah</p><h3 id="stat-lowest" class="text-xl font-bold text-slate-800">-</h3></div>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <h2 class="text-lg font-bold text-emerald-950 flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-500"></i> PEMENANG LOMBA</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="podium-container">
+                <div class="bg-gradient-to-br from-amber-50 to-amber-100 border-2 border-amber-300 rounded-2xl p-5 shadow-md relative overflow-hidden flex flex-col justify-between">
+                    <div class="inline-block bg-amber-500 text-white text-xs px-3 py-1 rounded-full font-bold mb-3 shadow-sm w-fit">🥇 JUARA 1</div>
+                    <h3 id="podium-1-name" class="text-xl font-bold text-amber-950 mb-1 truncate">-</h3>
+                    <div class="mt-4 pt-3 border-t border-amber-200/60 flex justify-between items-center"><span class="text-xs text-amber-900 font-medium">Nilai Akhir</span><span id="podium-1-score" class="text-2xl font-extrabold text-amber-950">0.00</span></div>
+                </div>
+                <div class="bg-gradient-to-br from-slate-50 to-slate-200 border-2 border-slate-300 rounded-2xl p-5 shadow-md relative overflow-hidden flex flex-col justify-between">
+                    <div class="inline-block bg-slate-500 text-white text-xs px-3 py-1 rounded-full font-bold mb-3 shadow-sm w-fit">🥈 JUARA 2</div>
+                    <h3 id="podium-2-name" class="text-xl font-bold text-slate-900 mb-1 truncate">-</h3>
+                    <div class="mt-4 pt-3 border-t border-slate-300/60 flex justify-between items-center"><span class="text-xs text-slate-800 font-medium">Nilai Akhir</span><span id="podium-2-score" class="text-2xl font-extrabold text-slate-900">0.00</span></div>
+                </div>
+                <div class="bg-gradient-to-br from-orange-50 to-amber-100/60 border-2 border-amber-700/30 rounded-2xl p-5 shadow-md relative overflow-hidden flex flex-col justify-between">
+                    <div class="inline-block bg-amber-700 text-white text-xs px-3 py-1 rounded-full font-bold mb-3 shadow-sm w-fit">🥉 JUARA 3</div>
+                    <h3 id="podium-3-name" class="text-xl font-bold text-amber-950 mb-1 truncate">-</h3>
+                    <div class="mt-4 pt-3 border-t border-amber-800/20 flex justify-between items-center"><span class="text-xs text-amber-900 font-medium">Nilai Akhir</span><span id="podium-3-score" class="text-2xl font-extrabold text-amber-950">0.00</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+            <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 no-print">
+                <h2 class="text-lg font-bold text-emerald-950 flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-emerald-700"></i> INPUT & EDIT PESERTA LOMBA</h2>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <button onclick="addParticipant()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-4 py-2 rounded-lg shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer">
+                        <i class="fa-solid fa-plus"></i> Tambah Peserta
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-emerald-900 text-white text-xs uppercase tracking-wider">
+                            <th class="p-3 text-center">No</th>
+                            <th class="p-3">Nama Peserta</th>
+                            <th class="p-3 text-center">Kes. Bacaan</th>
+                            <th class="p-3 text-center">N. Bacaan</th>
+                            <th class="p-3 text-center">Kes. Murodiyah</th>
+                            <th class="p-3 text-center">N. Murodiyah</th>
+                            <th class="p-3 text-center">Kes. Tanya Jawab</th>
+                            <th class="p-3 text-center">N. Tanya Jawab</th>
+                            <th class="p-3 text-center">Nilai Akhir</th>
+                            <th class="p-3 text-center">Ranking</th>
+                            <th class="p-3 text-center no-print">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="participant-table-body" class="divide-y divide-slate-200 text-sm"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-6 px-4 text-center text-xs mt-12 no-print">
+        <p>&copy; 2026 Pondok Pesantren Al Hikmah Darussalam</p>
+    </footer>
+
+    <script>
+        let participants = [
+            { id: Date.now(), name: 'Ahmad', errB: 1, errM: 1, errT: 1 },
+            { id: Date.now()+1, name: 'Ali', errB: 2, errM: 2, errT: 2 },
+            { id: Date.now()+2, name: 'Hasan', errB: 3, errM: 3, errT: 3 }
+        ];
+
+        function calculateScore(err) { return Math.max(0, 100 - (err * 5)); }
+
+        function updateData() {
+            let processed = participants.map(p => {
+                let nB = calculateScore(p.errB), nM = calculateScore(p.errM), nT = calculateScore(p.errT);
+                return { ...p, nB, nM, nT, nA: (nB + nM + nT) / 3 };
+            });
+
+            processed.sort((a, b) => b.nA - a.nA || b.nB - a.nB || b.nM - a.nM || b.nT - a.nT);
+            processed.forEach((p, i) => {
+                let rank = i + 1;
+                if (i > 0 && p.nA === processed[i-1].nA && p.nB === processed[i-1].nB && p.nM === processed[i-1].nM && p.nT === processed[i-1].nT) rank = processed[i-1].rank;
+                p.rank = rank;
+            });
+            
+            render(processed);
+        }
+
+        function render(data) {
+            const tbody = document.getElementById('participant-table-body');
+            tbody.innerHTML = '';
+            
+            participants.forEach((p, idx) => {
+                const calc = data.find(item => item.id === p.id);
+                const tr = document.createElement('tr');
+                
+                let rankBadge = calc.rank;
+                if(calc.rank === 1) rankBadge = '<span class="bg-amber-100 text-amber-800 font-bold px-2 py-1 rounded">🏆 1</span>';
+                else if(calc.rank === 2) rankBadge = '<span class="bg-slate-200 text-slate-800 font-bold px-2 py-1 rounded">🥈 2</span>';
+                else if(calc.rank === 3) rankBadge = '<span class="bg-orange-100 text-amber-900 font-bold px-2 py-1 rounded">🥉 3</span>';
+
+                tr.innerHTML = `
+                    <td class="p-3 text-center">${idx + 1}</td>
+                    <td class="p-3"><input type="text" value="${p.name}" oninput="pChange(${p.id}, 'name', this.value)" class="border-b focus:outline-none w-full" data-id="${p.id}"></td>
+                    <td class="p-3 text-center"><input type="number" value="${p.errB}" oninput="pChange(${p.id}, 'errB', this.value)" class="w-12 text-center border rounded error-input" data-id="${p.id}" data-field="errB"></td>
+                    <td class="p-3 text-center" id="nb-${p.id}">${calc.nB}</td>
+                    <td class="p-3 text-center"><input type="number" value="${p.errM}" oninput="pChange(${p.id}, 'errM', this.value)" class="w-12 text-center border rounded error-input" data-id="${p.id}" data-field="errM"></td>
+                    <td class="p-3 text-center" id="nm-${p.id}">${calc.nM}</td>
+                    <td class="p-3 text-center"><input type="number" value="${p.errT}" oninput="pChange(${p.id}, 'errT', this.value)" class="w-12 text-center border rounded error-input" data-id="${p.id}" data-field="errT"></td>
+                    <td class="p-3 text-center" id="nt-${p.id}">${calc.nT}</td>
+                    <td class="p-3 text-center font-bold" id="na-${p.id}">${calc.nA.toFixed(2)}</td>
+                    <td class="p-3 text-center font-bold" id="rank-${p.id}">${rankBadge}</td>
+                    <td class="p-3 text-center no-print"><button onclick="del(${p.id})" class="text-rose-600"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update Statistics
+            document.getElementById('stat-total').innerText = participants.length;
+            if(participants.length > 0) {
+                const scores = data.map(item => item.nA);
+                const highest = Math.max(...scores);
+                const lowest = Math.min(...scores);
+                const average = scores.reduce((a, b) => a + b, 0) / scores.length;
+
+                document.getElementById('stat-highest').innerText = highest.toFixed(2);
+                document.getElementById('stat-average').innerText = average.toFixed(2);
+                document.getElementById('stat-lowest').innerText = lowest.toFixed(2);
+            } else {
+                document.getElementById('stat-highest').innerText = '-';
+                document.getElementById('stat-average').innerText = '-';
+                document.getElementById('stat-lowest').innerText = '-';
+            }
+
+            const top = data.slice(0, 3);
+            for(let i=0; i<3; i++) {
+                document.getElementById(`podium-${i+1}-name`).innerText = top[i] ? top[i].name : '-';
+                document.getElementById(`podium-${i+1}-score`).innerText = top[i] ? top[i].nA.toFixed(2) : '0.00';
+            }
+        }
+
+        function pChange(id, field, val) {
+            const p = participants.find(x => x.id === id);
+            if(!p) return;
+
+            if(field === 'name') {
+                p.name = val;
+            } else {
+                p[field] = val === '' ? 0 : Math.max(0, parseInt(val) || 0);
+                
+                // Real-time calculation without full table re-render to preserve input focus & cursor position
+                let nB = calculateScore(p.errB);
+                let nM = calculateScore(p.errM);
+                let nT = calculateScore(p.errT);
+                let nA = (nB + nM + nT) / 3;
+
+                // Update row specific text values instantly
+                const nbEl = document.getElementById(`nb-${id}`);
+                const nmEl = document.getElementById(`nm-${id}`);
+                const ntEl = document.getElementById(`nt-${id}`);
+                const naEl = document.getElementById(`na-${id}`);
+                
+                if(nbEl) nbEl.innerText = nB;
+                if(nmEl) nmEl.innerText = nM;
+                if(ntEl) ntEl.innerText = nT;
+                if(naEl) naEl.innerText = nA.toFixed(2);
+
+                // Recalculate full dataset for stats, rankings and podiums efficiently
+                let processed = participants.map(item => {
+                    let ib = calculateScore(item.errB), im = calculateScore(item.errM), it = calculateScore(item.errT);
+                    return { ...item, nB: ib, nM: im, nT: it, nA: (ib + im + it) / 3 };
+                });
+
+                processed.sort((a, b) => b.nA - a.nA || b.nB - a.nB || b.nM - a.nM || b.nT - a.nT);
+                processed.forEach((item, i) => {
+                    let rank = i + 1;
+                    if (i > 0 && item.nA === processed[i-1].nA && item.nB === processed[i-1].nB && item.nM === processed[i-1].nM && item.nT === processed[i-1].nT) rank = processed[i-1].rank;
+                    item.rank = rank;
+                });
+
+                // Update rankings in DOM
+                processed.forEach(item => {
+                    const rEl = document.getElementById(`rank-${item.id}`);
+                    if(rEl) {
+                        let rankBadge = item.rank;
+                        if(item.rank === 1) rankBadge = '<span class="bg-amber-100 text-amber-800 font-bold px-2 py-1 rounded">🏆 1</span>';
+                        else if(item.rank === 2) rankBadge = '<span class="bg-slate-200 text-slate-800 font-bold px-2 py-1 rounded">🥈 2</span>';
+                        else if(item.rank === 3) rankBadge = '<span class="bg-orange-100 text-amber-900 font-bold px-2 py-1 rounded">🥉 3</span>';
+                        rEl.innerHTML = rankBadge;
+                    }
+                });
+
+                // Update Statistics Dashboard
+                if(participants.length > 0) {
+                    const scores = processed.map(item => item.nA);
+                    const highest = Math.max(...scores);
+                    const lowest = Math.min(...scores);
+                    const average = scores.reduce((a, b) => a + b, 0) / scores.length;
+
+                    document.getElementById('stat-highest').innerText = highest.toFixed(2);
+                    document.getElementById('stat-average').innerText = average.toFixed(2);
+                    document.getElementById('stat-lowest').innerText = lowest.toFixed(2);
+                } else {
+                    document.getElementById('stat-highest').innerText = '-';
+                    document.getElementById('stat-average').innerText = '-';
+                    document.getElementById('stat-lowest').innerText = '-';
+                }
+
+                // Update Podium
+                const top = processed.slice(0, 3);
+                for(let i=0; i<3; i++) {
+                    document.getElementById(`podium-${i+1}-name`).innerText = top[i] ? top[i].name : '-';
+                    document.getElementById(`podium-${i+1}-score`).innerText = top[i] ? top[i].nA.toFixed(2) : '0.00';
+                }
+            }
+        }
+
+        function addParticipant() {
+            if (participants.length >= 5) {
+                alert("Anda sedang menggunakan Versi Demo. Beberapa fitur dibatasi untuk keperluan uji coba.\nBeli versi lengkap untuk mengakses seluruh fitur.");
+                return;
+            }
+            participants.push({ id: Date.now(), name: 'Peserta Baru', errB: 0, errM: 0, errT: 0 });
+            updateData();
+        }
+
+        function del(id) {
+            participants = participants.filter(x => x.id !== id);
+            updateData();
+        }
+
+        function resetData() {
+            if(confirm('Reset semua data?')) {
+                participants = [];
+                updateData();
+            }
+        }
+
+        function demoPrint() {
+            alert("Anda sedang menggunakan Versi Demo. Beberapa fitur dibatasi untuk keperluan uji coba.\nBeli versi lengkap untuk mengakses seluruh fitur.");
+        }
+
+        window.onload = updateData;
+    </script>
+</body>
+</html>
